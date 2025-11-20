@@ -10,64 +10,33 @@
       gtag('config', 'G-NS85J8ZRRC');
     </script>
     
-    
-    <!-- Firebase Configuration - Load from external file -->
-    <!-- Create firebase-config.js with your Firebase credentials -->
-    <!-- Add firebase-config.js to .gitignore to keep it secure -->
-    <script src="firebase-config.js"></script>
-    
-    <!-- Firebase SDK v9 - Modular (Secure Version) -->
+    <!-- Firebase SDK v9 - Modular -->
     <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
       import { getDatabase, ref, onValue, runTransaction } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
       
-      // Check if Firebase config is loaded
-      if (!window.FIREBASE_CONFIG) {
-        console.error('❌ Firebase configuration not found!');
-        console.error('Please create firebase-config.js file with your Firebase credentials.');
-        throw new Error('Missing Firebase configuration');
-      }
-      
-      // Domain whitelist for additional security
-      const ALLOWED_DOMAINS = [
-        'mydailyjourneys.com',
-        'www.mydailyjourneys.com',
-        'localhost',
-        '127.0.0.1'
-      ];
-      
-      const currentDomain = window.location.hostname;
-      const isAllowedDomain = ALLOWED_DOMAINS.some(domain => 
-        currentDomain === domain || currentDomain.endsWith('.' + domain)
-      );
-      
-      if (!isAllowedDomain) {
-        console.warn('⚠️ Running on non-whitelisted domain:', currentDomain);
-        // Continue anyway for flexibility, but log the warning
-      }
-      
-      // Initialize Firebase
-      const app = initializeApp(window.FIREBASE_CONFIG);
-      const database = getDatabase(app);
-      
-      // SECURE: Create a protected API instead of exposing database directly
-      const firebaseAPI = {
-        getRef: (path) => ref(database, path),
-        listen: onValue,
-        transaction: runTransaction
+      const firebaseConfig = {
+        apiKey: "AIzaSyA-JPCy0Kx1OPRWLsPeYZy19AdEtXX2yOE",
+        authDomain: "travel-bingo-bee34.firebaseapp.com",
+        databaseURL: "https://travel-bingo-bee34-default-rtdb.firebaseio.com",
+        projectId: "travel-bingo-bee34",
+        storageBucket: "travel-bingo-bee34.firebasestorage.app",
+        messagingSenderId: "226946210782",
+        appId: "1:226946210782:web:1d010ad2845c052da6db4f",
+        measurementId: "G-FER4KDQ64F"
       };
       
-      // Expose only the API, not the raw database
-      window.firebaseAPI = Object.freeze(firebaseAPI);
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
       
-      // Legacy compatibility: these will be removed in future versions
-      // For now, keeping them for backward compatibility
+      // Export for global access
       window.firebaseDB = database;
       window.firebaseRef = ref;
       window.firebaseOnValue = onValue;
       window.firebaseRunTransaction = runTransaction;
       
-      console.log('✅ Firebase initialized successfully (Secure Mode)');
+      console.log('✅ Firebase initialized successfully!');
     </script>
     
     <meta charset="UTF-8">
@@ -1739,6 +1708,17 @@
         
         body[data-theme="classic"] .download-note {
             color: #A0A0A0;
+        }
+        
+        body[data-theme="classic"] .download-button {
+            background: #EC700B !important;
+            color: #FFFFFF !important;
+            border: 2px solid #EC700B;
+        }
+        
+        body[data-theme="classic"] .download-button:hover {
+            background: #FF7F1F !important;
+            box-shadow: 0 6px 20px rgba(236, 112, 11, 0.5) !important;
         }
         
         /* 7. Change Persona Button - Dark Mode */
