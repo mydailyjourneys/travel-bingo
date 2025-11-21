@@ -1315,7 +1315,7 @@
           background: rgba(255, 255, 255, 0.4);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          border: 2px solid rgba(236, 112, 11, 0.3);
+          border: 2px solid #EC700B;
           border-radius: 12px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           text-align: center;
@@ -1375,7 +1375,7 @@
           background: rgba(255, 255, 255, 0.4);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          border: 2px solid rgba(236, 112, 11, 0.3);
+          border: 2px solid #EC700B;
           border-radius: 12px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           text-align: center;
@@ -1699,7 +1699,7 @@
         /* Download Box - Dark Mode */
         body[data-theme="classic"] .download-box {
             background: rgba(35, 35, 35, 0.6);
-            border-color: var(--primary-color);
+            border-color: #EC700B;
         }
         
         body[data-theme="classic"] .download-intro {
@@ -2061,17 +2061,17 @@
     <div class="gift-popup" id="giftPopup">
       <div class="gift-emoji">🎁</div>
       <div class="gift-title">
-        <span data-he="רואים שאת/ה נהנים מהמשחק!" data-en="We see you're enjoying the game!"></span>
+        <span data-he="יא! קיבלתם מתנה!" data-en="Yay! You got a gift!"></span>
       </div>
       <div class="gift-desc">
-        <span data-he="כמתנה על הזמן שהקדשת/ה: קבל/י את <strong>"צ'קליסט המלונות החכם"</strong> בחינם.<br>זה הכלי שלי לוודא שאין הפתעות רעות בטיול." data-en="As a gift for your time: Get the <strong>"Smart Hotels Checklist"</strong> free.<br>It's my tool to avoid unpleasant surprises while traveling."></span>
+        <span data-he="אני רואה שאתם ממש נהנים מהמשחק, אז יש לי מתנה עבורכם – כדי שתזכרו את הרגעים המעולים האלה לנצח!<br><br><strong>5 דרכים לזכור את הטיול לנצח</strong>" data-en="I see you're really enjoying the game, so I have a gift for you – to help you remember these amazing moments forever!<br><br><strong>5 Ways to Remember Your Trip Forever</strong>"></span>
       </div>
       <div class="gift-buttons">
         <button class="gift-btn gift-accept" id="giftAccept">
-          <span data-he="כן, אני רוצה את הצ'קליסט!" data-en="Yes, I want the checklist!"></span>
+          <span data-he="כן, אני רוצה את המתנה!" data-en="Yes, I want the gift!"></span>
         </button>
         <button class="gift-btn gift-decline" id="giftDecline">
-          <span data-he="אולי בהזדמנות אחרת, אני ממשיך/ה לשחק" data-en="Maybe another time, I'll keep playing"></span>
+          <span data-he="תודה, אני ממשיך/ה לשחק" data-en="Thanks, I'll keep playing"></span>
         </button>
       </div>
     </div>
@@ -3803,9 +3803,9 @@
       const enText = el.getAttribute('data-en');
 
       if (currentLang === 'he' && heText) {
-        el.textContent = heText;
+        el.innerHTML = heText;
       } else if (currentLang === 'en' && enText) {
-        el.textContent = enText;
+        el.innerHTML = enText;
       }
 
       // כיוון הטקסט לפי השפה (פותר סימני פיסוק הפוכים)
@@ -3985,10 +3985,13 @@ html, body, *, *::before, *::after{
 .lang-en .he-text { display: none !important; }
 
 /* Export layout polish */
+/* Hide UI during export for smooth experience */
+.exporting { opacity: 0 !important; pointer-events: none !important; }
+/* Export layout polish - only affects the rendered canvas */
 .exporting .header img { max-height: 18vh; }
 .exporting .footer p { font-size: 0.9rem !important; }
-/* Slightly tighter vertical rhythm in export */
-.exporting #bingoGrid .bingo-cell { padding: 8px !important; line-height: 1.3 !important; font-size: 1.3rem !important; }
+/* Keep normal cell appearance - no visible changes to user */
+.exporting #bingoGrid .bingo-cell { padding: 8px !important; line-height: 1.3 !important; }
 </style>
 
 <script>
@@ -5082,10 +5085,15 @@ html, body, *, *::before, *::after{
     ctx.fillText(cta, textStartX, qrY + 30);
     
     // Instagram mention - middle - use footer color for dark mode
+    // IMPORTANT: Instagram is always in English, so @ must be on LEFT
+    const currentAlign = ctx.textAlign;  // Save current alignment
+    ctx.textAlign = 'left';  // Force left for English text
     ctx.font = 'bold 22px "Varela Round"';
     ctx.fillStyle = exportTheme.footerColor || exportTheme.textColorSecondary || '#E0E0E0';
     const instagram = '@mydailyjourneys_mdj';
-    ctx.fillText(instagram, textStartX, qrY + 70);
+    const instagramX = lang === 'he' ? (gridX + gridW - 60) : textX;  // Position but left-aligned
+    ctx.fillText(instagram, instagramX, qrY + 70);
+    ctx.textAlign = currentAlign;  // Restore original alignment
     
     // Website - bottom - use footer color for dark mode
     ctx.font = 'bold 22px "Varela Round"';
@@ -5759,11 +5767,19 @@ function trackShare() {
       });
     }
     
-    // Redirect to checklist (you'll need to set your actual URL)
-    const checklistUrl = 'https://www.mydailyjourneys.com/checklist'; // UPDATE THIS
-    window.open(checklistUrl, '_blank');
+    // Smart language routing - get current language
+    const currentLang = localStorage.getItem('bingoLang') || 
+                        document.documentElement.getAttribute('lang') || 
+                        'he';
     
-    console.log('🎁 Gift accepted! Redirecting to checklist...');
+    // Route to correct URL based on language
+    const giftUrl = currentLang === 'en' 
+      ? 'https://www.mydailyjourneys.com/freegift'
+      : 'https://www.mydailyjourneys.com/he/freegift';
+    
+    window.open(giftUrl, '_blank');
+    
+    console.log('🎁 Gift accepted! Redirecting to:', giftUrl);
   }
   
   // Handle gift decline
