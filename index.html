@@ -3115,7 +3115,6 @@
           }
         }
 
-        // Select persona
         function selectPersona(personaId) {
           selectedPersona = personaId;
           localStorage.setItem('userPersona', personaId);
@@ -3139,15 +3138,8 @@
           }
           localStorage.removeItem('shownAchievements');
           
-          // Show success message
-          const persona = personaBingoContent[personaId];
-          
-          // Get current language from HTML tag
-          const htmlTag = document.documentElement;
-          const lang = htmlTag.getAttribute('lang') || 'he';
-          const name = lang === 'he' ? persona.name.he : persona.name.en;
-          
-          showMessage(persona.emoji + ' ' + name + '!');
+          // Update the persona button to show selected persona
+          updatePersonaButton(personaId);
           
           // Hide quiz
           hidePersonaQuiz();
@@ -3166,6 +3158,29 @@
             window.isInitialLoad = false;
             console.log('🎯 Achievements re-enabled after persona change');
           }, 100);
+        }
+
+        // Update persona button to show selected persona
+        function updatePersonaButton(personaId) {
+          const btn = document.getElementById('openPersonaQuizBtn');
+          if (!btn) return;
+          
+          const span = btn.querySelector('span');
+          if (!span) return;
+          
+          const persona = personaBingoContent[personaId];
+          if (!persona) return;
+          
+          const heText = persona.emoji + ' ' + persona.name.he;
+          const enText = persona.emoji + ' ' + persona.name.en;
+          
+          // Update data attributes for language switching
+          span.setAttribute('data-he', heText);
+          span.setAttribute('data-en', enText);
+          
+          // Update current text based on language
+          const lang = document.documentElement.getAttribute('lang') || 'he';
+          span.textContent = lang === 'he' ? heText : enText;
         }
 
         // Bind persona cards click events
@@ -3291,6 +3306,8 @@
           if (shouldShowQuiz()) {
             // Show after short delay for better UX
             setTimeout(showPersonaQuiz, 500);
+            // Update button to show saved persona
+            updatePersonaButton(savedPersona);
           } else {
             // User has a persona - let the normal init() handle grid generation
             // DON'T call generatePersonaBingo here
