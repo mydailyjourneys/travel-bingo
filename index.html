@@ -1979,6 +1979,7 @@
 <!-- Google Analytics 4 - Phase 4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <!-- Replace G-XXXXXXXXXX with your actual GA4 measurement ID -->
+    <link rel="manifest" href="./manifest.json">
 </head>
 
 <body>
@@ -6703,6 +6704,21 @@ function trackShare() {
    console.log('App installed successfully');
    installPrompt = null;
  });</script>
+
+    <!-- Service Worker Registration for PWA -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(registration => {
+        console.log('Service Worker registered successfully:', registration);
+      })
+      .catch(err => {
+        console.log('Service Worker registration failed:', err);
+      });
+  });
+}
+</script>
     
 
 
