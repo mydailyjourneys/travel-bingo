@@ -6557,6 +6557,13 @@ function trackShare() {
     if (offlineDownload && typeof trackEvent === 'function') {
       offlineDownload.addEventListener('click', () => {
         trackEvent('offline_download_click', {
+                    // Trigger PWA install prompt if available
+        if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+        } else {
+            // Show message or direct user to install if PWA
+            console.log('💬 PWA install prompt not available or already installed');
+        }
           download_type: 'offline_html',
           source: 'download_box'
         });
@@ -6640,6 +6647,12 @@ function trackShare() {
     console.info('   או השתמש ב-Live Server ב-VS Code');
   } else if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
+                // Capture PWA install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            console.log('📊 PWA install prompt captured');
+        });
       // Use relative path for service worker
       const swPath = './sw.js';
       
