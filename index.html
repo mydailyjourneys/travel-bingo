@@ -6527,6 +6527,8 @@ function trackShare() {
     }
     
     if (typeof wrapExportPhase === 'function') {
+
+    
       wrapExportPhase();
     }
     
@@ -6622,7 +6624,11 @@ function trackShare() {
     window.isInitialLoad = false;
     
     console.log('✅ Master init completed');
-  }
+
+    // Hide skeleton loading screens
+    const skeletonLoaders = document.querySelectorAll('[class*="skeleton"], .loading-box, .loader');
+    skeletonLoaders.forEach(el => el.style.display = 'none');
+}
   
   // Run master init when DOM is ready
   if (document.readyState === 'loading') {
