@@ -6558,9 +6558,8 @@ function trackShare() {
       offlineDownload.addEventListener('click', () => {
         trackEvent('offline_download_click', {
                     // Trigger PWA install prompt if available
-        if (window.deferredPrompt) {
-            window.deferredPrompt.prompt();
-        } else {
+                if (installPrompt) {
+                    installPrompt.prompt();
             // Show message or direct user to install if PWA
             console.log('💬 PWA install prompt not available or already installed');
         }
@@ -6650,7 +6649,7 @@ function trackShare() {
                 // Capture PWA install prompt
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
-            window.deferredPrompt = e;
+                    installPrompt = e;
             console.log('📊 PWA install prompt captured');
         });
       // Use relative path for service worker
