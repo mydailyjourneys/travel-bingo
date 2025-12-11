@@ -6667,7 +6667,44 @@ function trackShare() {
       window.location.reload();
     });
   }
-</script>
 
-</body>
+
+
+ // PWA Install Prompt Handler
+ let installPrompt = null;
+ 
+ window.addEventListener('beforeinstallprompt', (event) => {
+   event.preventDefault();
+   installPrompt = event;
+   console.log('Install prompt ready');
+   
+   // Find download button and enable install
+   const downloadBtn = document.getElementById('pwaInstallBtn');
+                      
+   
+   if (downloadBtn) {
+     downloadBtn.style.display = 'block';
+     downloadBtn.onclick = (e) => {
+       e.preventDefault();
+       if (installPrompt) {
+         installPrompt.prompt();
+         installPrompt.userChoice.then((choiceResult) => {
+           if (choiceResult.outcome === 'accepted') {
+             console.log('User accepted install');
+           }
+           installPrompt = null;
+         });
+       }
+     };
+   }
+ });
+ 
+ window.addEventListener('appinstalled', () => {
+   console.log('App installed successfully');
+   installPrompt = null;
+ });</script>
+    
+
+
+<button id="pwaInstallBtn" data-type="install" style="display:none; position:fixed; top:10px; right:10px; padding:10px 20px; background:#ee7e29; color:white; border:none; border-radius:5px; cursor:pointer; z-index:9999; font-weight:bold;">הורד של אפליקציה</button></body>
 </html>
