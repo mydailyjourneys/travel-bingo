@@ -42,7 +42,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ee7e29">
-    <link rel="manifest" href="./manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <title>Travel Bingo - Discover The World Differently</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1979,41 +1979,10 @@
 <!-- Google Analytics 4 - Phase 4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <!-- Replace G-XXXXXXXXXX with your actual GA4 measurement ID -->
-    <link rel="manifest" href="./manifest.json">
-    <style>
-  /* Hide skeleton loading screens and all loading indicators immediately */
-  [class*="skeleton"],
-  .loading-skeleton,
-  .skeleton-loader,
-  .loading-box,
-  .loader,
-  .shimmer,
-  [class*="loader"],
-  [class*="loading"],
-  .placeholder,
-  .pulse,
-  .animate-pulse {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    opacity: 0 !important;
-  }
-</style>
 </head>
 
 <body>
     <div class="container">
-        
-<style>
-  /* Hide skeleton loading screens immediately */
-  [class*="skeleton"],
-  .loading-box,
-  .loader,
-  .shimmer {
-    display: none !important;
-    visibility: hidden !important;
-  }
-</style>
         <div class="header">
         <a id="header-link" href="https://www.mydailyjourneys.com/he/travel-bingo" data-he-href="https://www.mydailyjourneys.com/he/travel-bingo" data-en-href="https://www.mydailyjourneys.com/travel-bingo">
           <img
@@ -6557,8 +6526,6 @@ function trackShare() {
     }
     
     if (typeof wrapExportPhase === 'function') {
-
-    
       wrapExportPhase();
     }
     
@@ -6589,12 +6556,6 @@ function trackShare() {
     if (offlineDownload && typeof trackEvent === 'function') {
       offlineDownload.addEventListener('click', () => {
         trackEvent('offline_download_click', {
-                    // Trigger PWA install prompt if available
-                if (installPrompt) {
-                    installPrompt.prompt();
-            // Show message or direct user to install if PWA
-            console.log('💬 PWA install prompt not available or already installed');
-        }
           download_type: 'offline_html',
           source: 'download_box'
         });
@@ -6654,11 +6615,7 @@ function trackShare() {
     window.isInitialLoad = false;
     
     console.log('✅ Master init completed');
-
-    // Hide skeleton loading screens
-    const skeletonLoaders = document.querySelectorAll('[class*="skeleton"], .loading-box, .loader');
-    skeletonLoaders.forEach(el => el.style.display = 'none');
-}
+  }
   
   // Run master init when DOM is ready
   if (document.readyState === 'loading') {
@@ -6682,12 +6639,6 @@ function trackShare() {
     console.info('   או השתמש ב-Live Server ב-VS Code');
   } else if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-                // Capture PWA install prompt
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-                    installPrompt = e;
-            console.log('📊 PWA install prompt captured');
-        });
       // Use relative path for service worker
       const swPath = './sw.js';
       
@@ -6716,59 +6667,7 @@ function trackShare() {
       window.location.reload();
     });
   }
-
-
-
- // PWA Install Prompt Handler
- let installPrompt = null;
- 
- window.addEventListener('beforeinstallprompt', (event) => {
-   event.preventDefault();
-   installPrompt = event;
-   console.log('Install prompt ready');
-   
-   // Find download button and enable install
-   const downloadBtn = document.getElementById('pwaInstallBtn');
-                      
-   
-   if (downloadBtn) {
-     downloadBtn.style.display = 'block';
-     downloadBtn.onclick = (e) => {
-       e.preventDefault();
-       if (installPrompt) {
-         installPrompt.prompt();
-         installPrompt.userChoice.then((choiceResult) => {
-           if (choiceResult.outcome === 'accepted') {
-             console.log('User accepted install');
-           }
-           installPrompt = null;
-         });
-       }
-     };
-   }
- });
- 
- window.addEventListener('appinstalled', () => {
-   console.log('App installed successfully');
-   installPrompt = null;
- });</script>
-
-    <!-- Service Worker Registration for PWA -->
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(registration => {
-        console.log('Service Worker registered successfully:', registration);
-      })
-      .catch(err => {
-        console.log('Service Worker registration failed:', err);
-      });
-  });
-}
 </script>
-    
 
-
-<button id="pwaInstallBtn" data-type="install" style="display:none; position:fixed; top:10px; right:10px; padding:10px 20px; background:#ee7e29; color:white; border:none; border-radius:5px; cursor:pointer; z-index:9999; font-weight:bold;">הורד של אפליקציה</button></body>
+</body>
 </html>
