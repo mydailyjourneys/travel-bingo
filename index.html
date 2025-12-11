@@ -1980,6 +1980,25 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <!-- Replace G-XXXXXXXXXX with your actual GA4 measurement ID -->
     <link rel="manifest" href="./manifest.json">
+    <style>
+  /* Hide skeleton loading screens and all loading indicators immediately */
+  [class*="skeleton"],
+  .loading-skeleton,
+  .skeleton-loader,
+  .loading-box,
+  .loader,
+  .shimmer,
+  [class*="loader"],
+  [class*="loading"],
+  .placeholder,
+  .pulse,
+  .animate-pulse {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    opacity: 0 !important;
+  }
+</style>
 </head>
 
 <body>
