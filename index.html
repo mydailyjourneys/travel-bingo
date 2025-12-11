@@ -41,6 +41,8 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ee7e29">
+    <link rel="manifest" href="/manifest.json">
     <title>Travel Bingo - Discover The World Differently</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1280,6 +1282,201 @@
           text-align: center;
         }
 
+        /* ============================================================================
+           EASTER EGG POPUP - Universal
+           ============================================================================ */
+        .easter-egg-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.75);
+          z-index: 10001;
+          display: none;
+          backdrop-filter: blur(5px);
+        }
+
+        .easter-egg-overlay.show {
+          display: block;
+        }
+
+        .easter-egg-popup {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) scale(0);
+          background: white;
+          padding: 35px 25px;
+          border-radius: 20px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+          z-index: 10002;
+          text-align: center;
+          max-width: 450px;
+          width: 90%;
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .easter-egg-popup.show {
+          opacity: 1;
+          pointer-events: auto;
+          animation: easterPop 0.5s ease forwards;
+        }
+
+        @keyframes easterPop {
+          0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.05);
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+          }
+        }
+
+        .easter-emoji {
+          font-size: 4rem;
+          margin-bottom: 20px;
+          animation: easterBounce 1s ease infinite alternate;
+        }
+
+        @keyframes easterBounce {
+          from { transform: translateY(0) rotate(-5deg); }
+          to { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .easter-title {
+          color: var(--primary-color);
+          font-size: 1.4rem;
+          font-weight: 700;
+          margin-bottom: 15px;
+          line-height: 1.3;
+        }
+
+        .easter-message {
+          color: #555;
+          font-size: 1rem;
+          line-height: 1.6;
+          margin-bottom: 25px;
+        }
+
+        .easter-message strong {
+          color: var(--primary-color);
+          font-weight: 700;
+        }
+
+        .easter-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .easter-btn {
+          padding: 14px 20px;
+          border: none;
+          border-radius: 12px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-family: 'Varela Round';
+          width: 100%;
+        }
+
+        .easter-accept {
+          background: var(--primary-color);
+          color: white;
+          box-shadow: 0 4px 12px rgba(238, 126, 41, 0.3);
+        }
+
+        .easter-accept:hover {
+          background: var(--primary-color-hover);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(238, 126, 41, 0.4);
+        }
+
+        .easter-decline {
+          background: #f0f0f0;
+          color: #666;
+        }
+
+        .easter-decline:hover {
+          background: #e0e0e0;
+          color: #555;
+        }
+
+        /* Dark Mode for Easter Egg Popup */
+        body[data-theme="classic"] .easter-egg-popup {
+          background: rgba(25, 25, 25, 0.98);
+          border: 2px solid #ee7e29;
+        }
+
+        body[data-theme="classic"] .easter-title {
+          color: #ee7e29;
+        }
+
+        body[data-theme="classic"] .easter-message {
+          color: #E0E0E0;
+        }
+
+        body[data-theme="classic"] .easter-message strong {
+          color: #ee7e29;
+        }
+
+        body[data-theme="classic"] .easter-accept {
+          background: #ee7e29;
+          color: #FFFFFF;
+        }
+
+        body[data-theme="classic"] .easter-accept:hover {
+          background: #D66009;
+        }
+
+        body[data-theme="classic"] .easter-decline {
+          background: rgba(60, 60, 60, 0.9);
+          color: #E0E0E0;
+        }
+
+        body[data-theme="classic"] .easter-decline:hover {
+          background: rgba(80, 80, 80, 0.95);
+        }
+
+        /* Fix text direction for easter egg popup */
+        .lang-he .easter-title,
+        .lang-he .easter-message {
+          direction: rtl;
+          text-align: center;
+        }
+
+        .lang-en .easter-title,
+        .lang-en .easter-message {
+          direction: ltr;
+          text-align: center;
+        }
+
+        /* Mobile optimization for Easter Egg */
+        @media (max-width: 480px) {
+          .easter-egg-popup {
+            padding: 30px 20px;
+          }
+          
+          .easter-title {
+            font-size: 1.2rem;
+          }
+          
+          .easter-message {
+            font-size: 0.95rem;
+          }
+          
+          .easter-emoji {
+            font-size: 3rem;
+          }
+        }
+
         /* Social Proof Counter */
         .social-proof {
           text-align: center;
@@ -2070,6 +2267,18 @@
         <button class="gift-btn gift-decline" id="giftDecline">
           <span data-he="תודה, אני ממשיך/ה לשחק" data-en="Thanks, I'll keep playing"></span>
         </button>
+      </div>
+    </div>
+
+    <!-- Easter Egg Popup - Universal -->
+    <div class="easter-egg-overlay" id="easterOverlay"></div>
+    <div class="easter-egg-popup" id="easterPopup">
+      <div class="easter-emoji" id="easterEmoji">🎁</div>
+      <div class="easter-title" id="easterTitle"></div>
+      <div class="easter-message" id="easterMessage"></div>
+      <div class="easter-buttons">
+        <button class="easter-btn easter-accept" id="easterAccept"></button>
+        <button class="easter-btn easter-decline" id="easterDecline"></button>
       </div>
     </div>
 
@@ -2968,7 +3177,7 @@
                     // Apply the theme
                     applyTheme(themeName);
                     
-                    const hasFilledCells = cellStates.some(state => state !== null);
+                    const hasFilledCells = Array.isArray(cellStates) && cellStates.some(state => state !== null);
                     if (hasFilledCells) {
                         const notice = document.getElementById('updateNotice');
                         const lang = (localStorage.getItem('bingoLang') || 'he').toLowerCase();
@@ -5619,11 +5828,42 @@ function trackShare() {
     minSessionChecks: 3,             // Min checks in current session
   };
   
+  // Configuration - Validation thresholds for Easter Eggs
+  const VALIDATION_CONFIG = {
+    // אופציה א': דפוס איטי
+    slowPattern: {
+      minChecks: 3,
+      minAvgInterval: 30  // שניות
+    },
+    
+    // אופציה ב': מעורבות
+    engagement: {
+      minVisits: 2,
+      minChecksPerVisit: 1,
+      minTimeBetweenVisits: 1800  // 30 דקות
+    },
+    
+    // אופציה ג': שהייה
+    presence: {
+      minActiveTime: 300,  // 5 דקות
+      minChecks: 2
+    }
+  };
+  
   // Initialize or get engagement data
   function getEngagementData() {
     const data = localStorage.getItem('userEngagement');
     if (data) {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      // Ensure new fields exist for backward compatibility
+      if (!parsed.hasOwnProperty('isValidated')) parsed.isValidated = false;
+      if (!parsed.hasOwnProperty('validatedAt')) parsed.validatedAt = null;
+      if (!parsed.hasOwnProperty('tier1Shown')) parsed.tier1Shown = false;
+      if (!parsed.hasOwnProperty('tier2Shown')) parsed.tier2Shown = false;
+      if (!parsed.hasOwnProperty('tier3Shown')) parsed.tier3Shown = false;
+      if (!parsed.hasOwnProperty('checksInDifferentVisits')) parsed.checksInDifferentVisits = 0;
+      if (!parsed.hasOwnProperty('visitCheckMap')) parsed.visitCheckMap = {};
+      return parsed;
     }
     
     // First time - initialize
@@ -5636,7 +5876,15 @@ function trackShare() {
       currentSessionChecks: 0,
       checkTimestamps: [],
       giftOfferShown: false,
+      giftOfferShownTime: null,
       giftOfferResponse: null, // 'accepted' or 'declined'
+      isValidated: false,
+      validatedAt: null,
+      tier1Shown: false,
+      tier2Shown: false,
+      tier3Shown: false,
+      checksInDifferentVisits: 0,
+      visitCheckMap: {} // Track which visits had checks
     };
   }
   
@@ -5661,12 +5909,32 @@ function trackShare() {
     return data;
   }
   
+  // Track checks per visit
+  function trackCheckPerVisit(data) {
+    const visitKey = data.visitCount.toString();
+    if (!data.visitCheckMap) {
+      data.visitCheckMap = {};
+    }
+    if (!data.visitCheckMap[visitKey]) {
+      data.visitCheckMap[visitKey] = 0;
+    }
+    data.visitCheckMap[visitKey]++;
+    
+    // Count unique visits with checks
+    data.checksInDifferentVisits = Object.keys(data.visitCheckMap).length;
+    
+    return data;
+  }
+  
   // Track square check
   function trackSquareCheck(data) {
     const now = Date.now();
     data.totalChecks++;
     data.currentSessionChecks++;
     data.checkTimestamps.push(now);
+    
+    // Track checks per visit for validation
+    data = trackCheckPerVisit(data);
     
     // Keep only last 50 timestamps to avoid bloat
     if (data.checkTimestamps.length > 50) {
@@ -5708,11 +5976,77 @@ function trackShare() {
     return !hasSpamPattern && !hasAbandonedPattern && avgInterval >= ENGAGEMENT_CONFIG.minTimeBetweenChecks;
   }
   
+  // Calculate average interval between checks
+  function calculateAvgInterval(timestamps) {
+    if (!timestamps || timestamps.length < 2) return 0;
+    
+    const intervals = [];
+    for (let i = 1; i < timestamps.length; i++) {
+      intervals.push((timestamps[i] - timestamps[i-1]) / 1000); // seconds
+    }
+    
+    if (intervals.length === 0) return 0;
+    return intervals.reduce((a, b) => a + b, 0) / intervals.length;
+  }
+  
+  // Get total engagement time
+  function getTotalEngagementTime(data) {
+    return data.totalActiveTime || 0;
+  }
+  
+  // בדיקה: האם השחקן validated?
+  function checkIfValidated(data) {
+    // כבר validated? תמיד true
+    if (data.isValidated) return true;
+    
+    const avgInterval = calculateAvgInterval(data.checkTimestamps);
+    const totalTime = getTotalEngagementTime(data);
+    
+    // אופציה א': דפוס איטי
+    const slowPattern = (
+      data.totalChecks >= VALIDATION_CONFIG.slowPattern.minChecks &&
+      avgInterval >= VALIDATION_CONFIG.slowPattern.minAvgInterval
+    );
+    
+    // אופציה ב': מעורבות (ביקר פעמיים, סימן בכל פעם)
+    const engagement = (
+      data.visitCount >= VALIDATION_CONFIG.engagement.minVisits &&
+      data.checksInDifferentVisits >= 2  // סימן בלפחות 2 ביקורים שונים
+    );
+    
+    // אופציה ג': שהייה ארוכה
+    const presence = (
+      totalTime >= VALIDATION_CONFIG.presence.minActiveTime &&
+      data.totalChecks >= VALIDATION_CONFIG.presence.minChecks
+    );
+    
+    // אם עמד באחד מהקריטריונים
+    if (slowPattern || engagement || presence) {
+      data.isValidated = true;
+      data.validatedAt = Date.now();
+      saveEngagementData(data);
+      
+      console.log('✅ Player validated! Can see Easter Eggs from next visit.');
+      return true;
+    }
+    
+    return false;
+  }
+  
   // Check if should show gift offer
   function shouldShowGiftOffer(data) {
-    // Already shown or responded
-    if (data.giftOfferShown || data.giftOfferResponse) {
+    // If already responded, don't show again
+    if (data.giftOfferResponse) {
       return false;
+    }
+    
+    // If shown but no response, check if 3 minutes passed
+    if (data.giftOfferShown && !data.giftOfferResponse) {
+      const timeSince = Date.now() - data.giftOfferShownTime;
+      if (timeSince > 3 * 60 * 1000) {
+        return true; // Show again after 3 minutes
+      }
+      return false; // Still within 3 minutes, don't show
     }
     
     // Check all conditions
@@ -5756,6 +6090,7 @@ function trackShare() {
     // Mark as shown
     const data = getEngagementData();
     data.giftOfferShown = true;
+    data.giftOfferShownTime = Date.now();
     saveEngagementData(data);
     
     console.log('🎁 Gift offer shown to engaged user!');
@@ -5829,6 +6164,224 @@ function trackShare() {
     console.log('🎁 Gift declined. User continues playing.');
   }
   
+  // Easter Egg Popup Constants
+  const TIER1_POPUP = {
+    emoji: '✈️',
+    title: {
+      he: 'טסה לבד בפעם הראשונה?',
+      en: 'Traveling Solo for the First Time?'
+    },
+    message: {
+      he: 'אני רואה שאת נהנית מהמשחק! אם את מטיילת לבד (כמוני), כתבתי עבורך מדריך שלם עם כל מה שצריך לדעת מהצד המנטלי והטכני.<br><br><strong>המדריך המלא למסוגלות בטיול סולו</strong>',
+      en: 'I see you\'re enjoying the game! If you\'re traveling solo (like me), I wrote a complete guide with everything you need to know - mentally and practically.<br><br><strong>The Complete Solo Traveler Playbook</strong>'
+    },
+    cta: {
+      he: 'קחי אותי למדריך!',
+      en: 'Take me to the guide!'
+    },
+    decline: {
+      he: 'תודה, אני ממשיכה לשחק',
+      en: 'Thanks, I\'ll keep playing'
+    },
+    link: {
+      he: 'https://www.mydailyjourneys.com/he/post/מדריך-למסוגלות',
+      en: 'https://www.mydailyjourneys.com/post/the-solo-traveler-playbook'
+    }
+  };
+  
+  const TIER2_POPUP = {
+    emoji: '🏨',
+    title: {
+      he: 'עובדים מרחוק? יש לי משהו בשבילך 💼',
+      en: 'Working Remotely? I Got Something for You 💼'
+    },
+    message: {
+      he: 'נוודים דיגיטליים צריכים מלון שונה. לא רק מיטה - גם WiFi מהיר, שולחן עבודה, ושקט.<br><br>הכנתי <strong>צ\'ק ליסט חכם</strong> שיעזור לך להזמין את המלון המושלם לעבודה מרחוק.',
+      en: 'Digital nomads need a different kind of hotel. Not just a bed - fast WiFi, a proper desk, and quiet.<br><br>I created a <strong>smart checklist</strong> to help you book the perfect hotel for remote work.'
+    },
+    cta: {
+      he: 'תנו לי את הצ\'ק ליסט!',
+      en: 'Give me the checklist!'
+    },
+    decline: {
+      he: 'אולי אחר כך',
+      en: 'Maybe later'
+    },
+    link: {
+      he: 'https://www.mydailyjourneys.com/he/hotels-checklist',
+      en: 'https://www.mydailyjourneys.com/hotels-checklist'
+    }
+  };
+  
+  const TIER3_POPUP = {
+    emoji: '🗺️',
+    title: {
+      he: 'רוצה את זה ליעד שלך? 🌍',
+      en: 'Want This for YOUR Destination? 🌍'
+    },
+    message: {
+      he: 'אהבת את המשחק? דמייני שיש לך מסלול מותאם אישית בדיוק כמו הבינגו הזה - רק שזה בשביל היעד שלך, עם המקומות, החוויות והטיפים שמתאימים בול לסגנון הטיול שלך.<br><br><strong>אני יוצרת מסלולי טיול מותאמים אישית.</strong>',
+      en: 'Loved the game? Imagine having a personalized itinerary just like this bingo - but for YOUR destination, with places, experiences, and tips that perfectly match your travel style.<br><br><strong>I create custom travel itineraries.</strong>'
+    },
+    cta: {
+      he: 'בואי נתכנן ביחד!',
+      en: 'Let\'s plan together!'
+    },
+    decline: {
+      he: 'אולי בפעם אחרת',
+      en: 'Maybe another time'
+    },
+    link: {
+      he: 'https://www.mydailyjourneys.com/he/custom-travel-planning',
+      en: 'https://www.mydailyjourneys.com/custom-travel-planning'
+    }
+  };
+  
+  // Get Easter Egg to show based on tier and persona
+  function getEasterEggToShow(data, persona) {
+    // 1. בדוק אם validated
+    checkIfValidated(data);  // עדכון סטטוס אם צריך
+    
+    // 2. אם לא validated → שום פופ אפ
+    if (!data.isValidated) {
+      return null;
+    }
+    
+    // 3. אם validated, אבל זה אותו הביקור שבו נעשה validated
+    //    → חכה לביקור הבא
+    const timeSinceValidation = Date.now() - (data.validatedAt || 0);
+    const currentSessionTime = Date.now() - data.currentSessionStart;
+    
+    // אם validated בסשן הנוכחי → חכה לסשן הבא
+    if (currentSessionTime <= 60000 && timeSinceValidation <= 60000) {
+      console.log('🔒 Validated, but waiting for next visit to show Easter Eggs.');
+      return null;
+    }
+    
+    // 4. אם validated + זה ביקור חדש → עכשיו בדוק Tiers
+    const avgInterval = calculateAvgInterval(data.checkTimestamps);
+    
+    // Tier 1 - רק למטיילת לבד (solo-female)
+    if (!data.tier1Shown && persona === 'solo-female') {
+      const meetsTier1 = (
+        data.totalChecks >= 1 &&  // אפילו משבצת אחת מספיק!
+        avgInterval >= 20
+      );
+      
+      if (meetsTier1) {
+        return { tier: 1, product: 'documentation_guide', popup: TIER1_POPUP };
+      }
+    }
+    
+    // Tier 2 - רק לנודד דיגיטלי (digital-nomad)
+    if (!data.tier2Shown && persona === 'digital-nomad') {
+      const meetsTier2 = (
+        data.totalChecks >= 5 &&
+        avgInterval >= 30 &&
+        data.visitCount >= 2
+      );
+      
+      if (meetsTier2) {
+        return { tier: 2, product: 'hotel_checklist', popup: TIER2_POPUP };
+      }
+    }
+    
+    // Tier 3 - לכולם
+    if (!data.tier3Shown) {
+      const meetsTier3 = (
+        data.totalChecks >= 10 &&
+        data.visitCount >= 3
+      );
+      
+      if (meetsTier3) {
+        return { tier: 3, product: 'service_popup', popup: TIER3_POPUP };
+      }
+    }
+    
+    return null;
+  }
+  
+  // Show Easter Egg popup
+  function showEasterEgg(easterEgg) {
+    if (!easterEgg || !easterEgg.popup) return;
+    
+    const overlay = document.getElementById('easterOverlay');
+    const popup = document.getElementById('easterPopup');
+    const emoji = document.getElementById('easterEmoji');
+    const title = document.getElementById('easterTitle');
+    const message = document.getElementById('easterMessage');
+    const acceptBtn = document.getElementById('easterAccept');
+    const declineBtn = document.getElementById('easterDecline');
+    
+    if (!overlay || !popup || !emoji || !title || !message || !acceptBtn || !declineBtn) return;
+    
+    // Get current language
+    const currentLang = (localStorage.getItem('bingoLang') || 'he').toLowerCase();
+    const lang = currentLang === 'en' ? 'en' : 'he';
+    
+    // Set content
+    emoji.textContent = easterEgg.popup.emoji;
+    title.textContent = easterEgg.popup.title[lang];
+    message.innerHTML = easterEgg.popup.message[lang];
+    acceptBtn.textContent = easterEgg.popup.cta[lang];
+    declineBtn.textContent = easterEgg.popup.decline[lang];
+    
+    // Show popup
+    overlay.classList.add('show');
+    popup.classList.add('show');
+    
+    // Mark tier as shown
+    const data = getEngagementData();
+    if (easterEgg.tier === 1) data.tier1Shown = true;
+    if (easterEgg.tier === 2) data.tier2Shown = true;
+    if (easterEgg.tier === 3) data.tier3Shown = true;
+    saveEngagementData(data);
+    
+    // Store current easter egg for button handlers
+    window.currentEasterEgg = easterEgg;
+    
+    console.log(`🎁 Easter Egg Tier ${easterEgg.tier} shown!`);
+  }
+  
+  // Close Easter Egg popup
+  function closeEasterEgg() {
+    const overlay = document.getElementById('easterOverlay');
+    const popup = document.getElementById('easterPopup');
+    
+    if (overlay) overlay.classList.remove('show');
+    if (popup) popup.classList.remove('show');
+    
+    window.currentEasterEgg = null;
+  }
+  
+  // Handle Easter Egg acceptance
+  function handleEasterAccept() {
+    const easterEgg = window.currentEasterEgg;
+    if (!easterEgg) return;
+    
+    closeEasterEgg();
+    
+    // Get current language
+    const currentLang = (localStorage.getItem('bingoLang') || 'he').toLowerCase();
+    const lang = currentLang === 'en' ? 'en' : 'he';
+    
+    // Open link
+    const link = easterEgg.popup.link[lang];
+    window.open(link, '_blank');
+    
+    console.log(`🎁 Easter Egg Tier ${easterEgg.tier} accepted! Redirecting to:`, link);
+  }
+  
+  // Handle Easter Egg decline
+  function handleEasterDecline() {
+    const easterEgg = window.currentEasterEgg;
+    if (!easterEgg) return;
+    
+    closeEasterEgg();
+    
+    console.log(`🎁 Easter Egg Tier ${easterEgg.tier} declined.`);
+  }
+  
   // Initialize gift system
   function initGiftSystem() {
     let engagementData = getEngagementData();
@@ -5841,20 +6394,32 @@ function trackShare() {
       activeTime: Math.round(engagementData.totalActiveTime)
     });
     
-    // Bind buttons
+    // Bind gift buttons
     const acceptBtn = document.getElementById('giftAccept');
     const declineBtn = document.getElementById('giftDecline');
-    const overlay = document.getElementById('giftOverlay');
     
     if (acceptBtn) acceptBtn.addEventListener('click', handleGiftAccept);
     if (declineBtn) declineBtn.addEventListener('click', handleGiftDecline);
-    if (overlay) overlay.addEventListener('click', closeGiftOffer);
+    
+    // Bind easter egg buttons
+    const easterAcceptBtn = document.getElementById('easterAccept');
+    const easterDeclineBtn = document.getElementById('easterDecline');
+    
+    if (easterAcceptBtn) easterAcceptBtn.addEventListener('click', handleEasterAccept);
+    if (easterDeclineBtn) easterDeclineBtn.addEventListener('click', handleEasterDecline);
     
     // Check periodically if should show offer
     setInterval(() => {
       engagementData = getEngagementData();
       if (shouldShowGiftOffer(engagementData)) {
         showGiftOffer();
+      }
+      
+      // Check for Easter Eggs
+      const persona = localStorage.getItem('userPersona') || 'authentic-traveler';
+      const easterEgg = getEasterEggToShow(engagementData, persona);
+      if (easterEgg) {
+        showEasterEgg(easterEgg);
       }
     }, 10000); // Check every 10 seconds
   }
@@ -5878,6 +6443,13 @@ function trackShare() {
       if (shouldShowGiftOffer(data)) {
         // Small delay to not interrupt user action
         setTimeout(() => showGiftOffer(), 2000);
+      }
+      
+      // Check for Easter Eggs
+      const persona = localStorage.getItem('userPersona') || 'authentic-traveler';
+      const easterEgg = getEasterEggToShow(data, persona);
+      if (easterEgg) {
+        setTimeout(() => showEasterEgg(easterEgg), 3000);
       }
       
       return result;
@@ -6052,6 +6624,49 @@ function trackShare() {
     masterInit();
   }
 })();
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+  // Check if running from file:// protocol (local file)
+  const isLocalFile = window.location.protocol === 'file:';
+  
+  if (isLocalFile) {
+    console.warn('⚠️ האפליקציה רצה מ-file:// - Service Worker ו-Manifest לא יעבדו');
+    console.info('💡 כדי להפעיל PWA, הרץ שרת מקומי:');
+    console.info('   Python: python -m http.server 8000');
+    console.info('   Node.js: npx http-server');
+    console.info('   או השתמש ב-Live Server ב-VS Code');
+  } else if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Use relative path for service worker
+      const swPath = './sw.js';
+      
+      navigator.serviceWorker.register(swPath)
+        .then((registration) => {
+          console.log('✅ Service Worker registered successfully:', registration.scope);
+          
+          // Check for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🔄 New service worker available. Refresh to update.');
+              }
+            });
+          });
+        })
+        .catch((error) => {
+          console.log('❌ Service Worker registration failed:', error);
+        });
+    });
+    
+    // Listen for service worker controller changes
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log('🔄 Service Worker controller changed. Reloading page...');
+      window.location.reload();
+    });
+  }
 </script>
 
 </body>
