@@ -6693,38 +6693,42 @@ function trackShare() {
     });
   }
 
-  // 2. התקנת PWA מתוך הכפתור
+  <script>
+  // זיהוי iOS + מצב "מותקן"
+  const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  const isInStandaloneMode =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
   let deferredInstallPrompt = null;
 
-  // הדפדפן מודיע לנו שאפשר להציע התקנה
+  // לדפדפנים שתומכים ב-beforeinstallprompt (אנדרואיד, דסקטופ)
   window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault(); // לא להציג את הבאנר הדיפולטי
+    event.preventDefault();
     deferredInstallPrompt = event;
 
-    const installButton = document.getElementById('offlineInstallButton');
-    if (!installButton) return;
+    const btn = document.getElementById('offlineInstallButton');
+    if (!btn) return;
+    const labelSpan = btn.querySelector('span');
+    if (!labelSpan) return;
 
-    // מעדכנים טקסט של הכפתור כשהתקנה זמינה
-    const labelSpan = installButton.querySelector('span');
-    if (labelSpan) {
-      labelSpan.setAttribute('data-i18n-he', '📲 התקנת האפליקציה');
-      labelSpan.setAttribute('data-i18n-en', '📲 Install the app');
+    // משנים את הטקסט לכפתור "התקנת האפליקציה"
+    labelSpan.setAttribute('data-he', '📲 התקנת האפליקציה');
+    labelSpan.setAttribute('data-en', '📲 Install the app');
 
-      const currentLang = document.documentElement.lang || 'he';
-      labelSpan.textContent = currentLang.startsWith('he')
-        ? labelSpan.getAttribute('data-i18n-he')
-        : labelSpan.getAttribute('data-i18n-en');
-    }
+    const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+    labelSpan.innerHTML = lang === 'he'
+      ? labelSpan.getAttribute('data-he')
+      : labelSpan.getAttribute('data-en');
   });
 
   async function handleInstallClick(event) {
-    // אם אין beforeinstallprompt - נותנים לכפתור לעבוד כרגיל (הורדת קובץ)
+    // אם אין beforeinstallprompt - נותנים לכפתור להתנהג כהורדת קובץ רגילה
     if (!deferredInstallPrompt) {
       return;
     }
 
     event.preventDefault();
-
     deferredInstallPrompt.prompt();
     const choice = await deferredInstallPrompt.userChoice;
     console.log('PWA install result:', choice.outcome);
@@ -6732,9 +6736,34 @@ function trackShare() {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    const installButton = document.getElementById('offlineInstallButton');
-    if (installButton) {
-      installButton.addEventListener('click', handleInstallClick);
+    const btn = document.getElementById('offlineInstallButton');
+    if (!btn) return;
+
+    const labelSpan = btn.querySelector('span');
+
+    if (isIos && !isInStandaloneMode) {
+      // אייפון - הכפתור נותן הסבר במקום התקנה אוטומטית
+      if (labelSpan) {
+        labelSpan.setAttribute('data-he', '📲 התקנת האפליקציה באייפון');
+        labelSpan.setAttribute('data-en', '📲 Install on iPhone');
+
+        const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+        labelSpan.innerHTML = lang === 'he'
+          ? labelSpan.getAttribute('data-he')
+          : labelSpan.getAttribute('data-en');
+      }
+
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        const lang = (document.documentElement.getAttribute('lang') || 'he').toLowerCase();
+        const message = lang === 'he'
+          ? 'כדי להתקין באייפון:.\n1. ללחוץ על כפתור השיתוף (הריבוע עם החץ למעלה).\n2. לבחור "הוספה למסך הבית".\n3. לאשר.\n\nאחרי זה הבינגו יופיע כאפליקציה ויעבוד גם באופליין.'
+          : 'To install on iPhone:\n1. Open this site in Safari.\n2. Tap the Share button (square with the up arrow).\n3. Choose "Add to Home Screen".\n4. Confirm.\n\nThen the bingo appears as an app and works offline.';
+        alert(message);
+      });
+    } else {
+      // אנדרואיד / דסקטופ - מנסים התקנת PWA דרך beforeinstallprompt
+      btn.addEventListener('click', handleInstallClick);
     }
   });
 </script>
