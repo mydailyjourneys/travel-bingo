@@ -1977,8 +1977,10 @@
         }
     </style>
 <!-- Google Analytics 4 - Phase 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NS85J8ZRRC"></script>
 <!-- Replace G-XXXXXXXXXX with your actual GA4 measurement ID -->
+<link rel="manifest" href="./manifest.json">
+
 </head>
 
 <body>
@@ -6665,6 +6667,15 @@ function trackShare() {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       console.log('🔄 Service Worker controller changed. Reloading page...');
       window.location.reload();
+    });
+  }
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .catch(err => console.log('SW registration failed', err));
     });
   }
 </script>
