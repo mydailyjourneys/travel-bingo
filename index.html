@@ -2204,11 +2204,18 @@
           <div class="download-intro">
             <span data-he="רוצים לשחק בלי אינטרנט? הורידו את הגרסה העדכנית ביותר כאן!" data-en="Want to play offline? Download the latest version here!"></span>
           </div>
-          <a href="https://bingo.mydailyjourneys.com/index.html" 
-             download="Travel-Bingo-Offline.html" 
-             class="download-button">
-            <span data-he="📥 הורדה לשימוש אופליין" data-en="📥 Download for Offline Play"></span>
+          <a
+            id="offlineInstallButton"
+            href="https://bingo.mydailyjourneys.com/index.html"
+            download="Travel-Bingo-Offline.html"
+            class="download-button"
+          >
+            <span data-i18n-he="📥 הורדה לשימוש אופליין"
+                  data-i18n-en="📥 Download for offline play">
+              📥 הורדה לשימוש אופליין
+            </span>
           </a>
+
           <div class="download-note">
             <span data-he="שמרו ופתחו בכל דפדפן – תמיד הגרסה האחרונה!" data-en="Save and open with any browser – always the latest version!"></span>
           </div>
@@ -6669,6 +6676,67 @@ function trackShare() {
       window.location.reload();
     });
   }
+</script>
+
+<!-- Service worker + PWA install -->
+<script>
+  // 1. רישום ה-service worker (חייב בשביל PWA)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => {
+          console.log('Service worker registered', reg.scope);
+        })
+        .catch(err => {
+          console.error('Service worker registration failed', err);
+        });
+    });
+  }
+
+  // 2. התקנת PWA מתוך הכפתור
+  let deferredInstallPrompt = null;
+
+  // הדפדפן מודיע לנו שאפשר להציע התקנה
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault(); // לא להציג את הבאנר הדיפולטי
+    deferredInstallPrompt = event;
+
+    const installButton = document.getElementById('offlineInstallButton');
+    if (!installButton) return;
+
+    // מעדכנים טקסט של הכפתור כשהתקנה זמינה
+    const labelSpan = installButton.querySelector('span');
+    if (labelSpan) {
+      labelSpan.setAttribute('data-i18n-he', '📲 התקנת האפליקציה');
+      labelSpan.setAttribute('data-i18n-en', '📲 Install the app');
+
+      const currentLang = document.documentElement.lang || 'he';
+      labelSpan.textContent = currentLang.startsWith('he')
+        ? labelSpan.getAttribute('data-i18n-he')
+        : labelSpan.getAttribute('data-i18n-en');
+    }
+  });
+
+  async function handleInstallClick(event) {
+    // אם אין beforeinstallprompt - נותנים לכפתור לעבוד כרגיל (הורדת קובץ)
+    if (!deferredInstallPrompt) {
+      return;
+    }
+
+    event.preventDefault();
+
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    console.log('PWA install result:', choice.outcome);
+    deferredInstallPrompt = null;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const installButton = document.getElementById('offlineInstallButton');
+    if (installButton) {
+      installButton.addEventListener('click', handleInstallClick);
+    }
+  });
 </script>
 
 </body>
