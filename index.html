@@ -6703,7 +6703,8 @@ function trackShare() {
   let deferredInstallPrompt = null;
 
   // לדפדפנים שתומכים ב-beforeinstallprompt (אנדרואיד, דסקטופ)
-  window.addEventListener('beforeinstallprompt', (event) => {
+    window.addEventListener('beforeinstallprompt', (event) => {
+    console.log('🔥 beforeinstallprompt fired');
     event.preventDefault();
     deferredInstallPrompt = event;
 
