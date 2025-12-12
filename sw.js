@@ -1,3 +1,4 @@
+const CACHE_VERSION = 'v1.3.0';
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -6775,3 +6776,4 @@ function trackShare() {
 
 </body>
 </html>
+
