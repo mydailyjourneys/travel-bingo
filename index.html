@@ -65,6 +65,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-JPCy0Kx1OPRWLsPeYZy19AdEtXX2yOE&libraries=places&language=he"></script>
     <style>
         /* ============================================================================
            CSS VARIABLES FOR THEMES SYSTEM
@@ -183,7 +184,40 @@
             color: #666;
             margin-bottom: 5px;
         }
-        
+
+        /* Google Places Autocomplete Styling */
+        .pac-container {
+            font-family: 'Varela Round';
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-top: 4px;
+            z-index: 10000;
+        }
+
+        .pac-item {
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .pac-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pac-item-selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .pac-icon {
+            margin-left: 8px;
+        }
+
+        .pac-item-query {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
         /* ============================================================================
            PERSONA SELECTOR BUTTON - Beautiful & Prominent
            ============================================================================ */
@@ -3218,6 +3252,44 @@
             document.getElementById('location').addEventListener('input', saveState);
             document.getElementById('dateFrom').addEventListener('input', saveState);
             document.getElementById('dateTo').addEventListener('input', saveState);
+
+            // Initialize Google Places Autocomplete for location field
+            if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+                const locationInput = document.getElementById('location');
+                const autocomplete = new google.maps.places.Autocomplete(locationInput, {
+                    types: ['(cities)'],
+                    fields: ['name', 'formatted_address']
+                });
+
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    if (place.name) {
+                        locationInput.value = place.name;
+                        saveState();
+
+                        // Track location selection in Google Analytics
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'location_selected', {
+                                event_category: 'Travel Bingo',
+                                event_label: place.name,
+                                location_name: place.name,
+                                location_full: place.formatted_address || place.name
+                            });
+                        }
+
+                        // Track location selection in Meta Pixel
+                        if (typeof fbq !== 'undefined') {
+                            fbq('track', 'Search', {
+                                search_string: place.name,
+                                content_category: 'Travel Destination',
+                                content_name: place.name
+                            });
+                        }
+
+                        console.log('📍 Location tracked:', place.name);
+                    }
+                });
+            }
 
             document.getElementById('resetBtn').addEventListener('click', () => {
                 if (confirm(getMsg('confirmReset'))) {
