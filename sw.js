@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1.4.8';
+const CACHE_VERSION = 'v1.4.9';
 // Service Worker for Travel Bingo - Cache First Strategy
 const CACHE_NAME = 'travel-bingo-v1';
 const STATIC_CACHE_NAME = 'travel-bingo-static-v1';
@@ -148,6 +148,7 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 });
+
 
 
 
