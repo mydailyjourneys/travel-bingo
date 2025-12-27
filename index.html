@@ -83,6 +83,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+
+    <!-- Google Places API (New) -->
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVrwg7_v9DofOBF_V-cc_GktrghEpbexs&libraries=places&callback=initAutocomplete"></script>
+
     <style>
         /* ============================================================================
            CSS VARIABLES FOR THEMES SYSTEM
@@ -202,7 +206,44 @@
             margin-bottom: 5px;
         }
 
-        /* Google Places Autocomplete Styling */
+        /* Google Places Autocomplete Styling (New API) */
+        #location-dropdown {
+            position: absolute;
+            background: var(--cell-gradient-end);
+            border: 2px solid var(--badge-border);
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 100%;
+            z-index: 10000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            margin-top: 4px;
+            font-family: 'Varela Round';
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            transition: background-color 0.2s ease;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background-color: rgba(238, 126, 41, 0.2);
+        }
+
+        .autocomplete-item:active {
+            background-color: rgba(238, 126, 41, 0.4);
+        }
+
+        /* Legacy autocomplete styling (keep for compatibility) */
         .pac-container {
             font-family: 'Varela Round';
             border-radius: 8px;
@@ -2170,7 +2211,10 @@
             
             <div class="custom-inputs">
                 <input type="text" id="tripTitle" placeholder="צרו כותרת לטיול (למשל: חופשה בתאילנד!)" />
-                <input type="text" id="location" placeholder="🌍 היכן אתם? (למשל: בנגקוק)" />
+                <div style="position: relative; width: 100%;">
+                    <input type="text" id="location" placeholder="🌍 היכן אתם? (למשל: בנגקוק)" autocomplete="off" />
+                    <div id="location-dropdown" class="autocomplete-dropdown"></div>
+                </div>
             </div>
             <div class="date-inputs">
                 <div class="date-field">
@@ -3270,33 +3314,8 @@
             document.getElementById('dateFrom').addEventListener('input', saveState);
             document.getElementById('dateTo').addEventListener('input', saveState);
 
-            // Google Places Autocomplete is deprecated for new customers
-            // For now, just track manual location input
-            const locationInput = document.getElementById('location');
-            locationInput.addEventListener('change', function() {
-                const locationValue = locationInput.value;
-                if (locationValue) {
-                    // Track location entry in Google Analytics
-                    if (typeof gtag !== 'undefined') {
-                        gtag('event', 'location_entered', {
-                            event_category: 'Travel Bingo',
-                            event_label: locationValue,
-                            location_name: locationValue
-                        });
-                    }
-
-                    // Track location entry in Meta Pixel
-                    if (typeof fbq !== 'undefined') {
-                        fbq('track', 'Search', {
-                            search_string: locationValue,
-                            content_category: 'Travel Destination',
-                            content_name: locationValue
-                        });
-                    }
-
-                    console.log('📍 Location entered:', locationValue);
-                }
-            });
+            // Google Places Autocomplete will be initialized via callback
+            // (see initAutocomplete function below)
 
             document.getElementById('resetBtn').addEventListener('click', () => {
                 if (confirm(getMsg('confirmReset'))) {
@@ -6764,6 +6783,134 @@ function trackShare() {
       window.location.reload();
     });
   }
+
+// ============================================================================
+// Google Places Autocomplete (New API)
+// ============================================================================
+
+let autocompleteService;
+let sessionToken;
+
+async function initAutocomplete() {
+  console.log('📍 Initializing Google Places Autocomplete...');
+
+  try {
+    // Load the Places library
+    const { AutocompleteService, AutocompleteSessionToken } =
+      await google.maps.importLibrary("places");
+
+    autocompleteService = new AutocompleteService();
+    sessionToken = new AutocompleteSessionToken();
+
+    // Get elements
+    const input = document.getElementById('location');
+    const dropdown = document.getElementById('location-dropdown');
+
+    if (!input || !dropdown) {
+      console.error('❌ Location input or dropdown not found');
+      return;
+    }
+
+    // Input event listener
+    input.addEventListener('input', async (e) => {
+      const value = e.target.value;
+
+      if (value.length < 2) {
+        dropdown.innerHTML = '';
+        dropdown.style.display = 'none';
+        return;
+      }
+
+      try {
+        const request = {
+          input: value,
+          sessionToken: sessionToken,
+          types: ['(regions)'], // Regions includes countries, cities, states, etc.
+        };
+
+        const response = await autocompleteService.getPlacePredictions(request);
+
+        if (response.predictions && response.predictions.length > 0) {
+          displaySuggestions(response.predictions, dropdown, input);
+        } else {
+          dropdown.innerHTML = '';
+          dropdown.style.display = 'none';
+        }
+
+      } catch (error) {
+        console.error('Autocomplete error:', error);
+        dropdown.innerHTML = '';
+        dropdown.style.display = 'none';
+      }
+    });
+
+    // Click outside to close dropdown
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.innerHTML = '';
+        dropdown.style.display = 'none';
+      }
+    });
+
+    console.log('✅ Google Places Autocomplete initialized successfully');
+
+  } catch (error) {
+    console.error('❌ Failed to initialize Google Places Autocomplete:', error);
+  }
+}
+
+function displaySuggestions(predictions, dropdown, input) {
+  dropdown.innerHTML = '';
+  dropdown.style.display = 'block';
+
+  predictions.forEach(prediction => {
+    const div = document.createElement('div');
+    div.className = 'autocomplete-item';
+    div.textContent = prediction.description;
+
+    div.addEventListener('click', () => {
+      input.value = prediction.description;
+      dropdown.innerHTML = '';
+      dropdown.style.display = 'none';
+
+      // Save state
+      if (typeof saveState === 'function') {
+        saveState();
+      }
+
+      // Track location selection
+      handleLocationSelect(prediction.description);
+
+      // Regenerate new session token for billing optimization
+      sessionToken = new google.maps.places.AutocompleteSessionToken();
+    });
+
+    dropdown.appendChild(div);
+  });
+}
+
+function handleLocationSelect(locationName) {
+  console.log('📍 Location selected:', locationName);
+
+  // Track in Google Analytics
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'location_selected', {
+      event_category: 'Travel Bingo',
+      event_label: locationName,
+      location_name: locationName
+    });
+  }
+
+  // Track in Meta Pixel
+  if (typeof fbq !== 'undefined') {
+    fbq('track', 'Search', {
+      search_string: locationName,
+      content_category: 'Travel Destination',
+      content_name: locationName
+    });
+  }
+}
+
 </script>
 
 </body>
