@@ -83,14 +83,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-JPCy0Kx1OPRWLsPeYZy19AdEtXX2yOE&libraries=places&language=he&callback=initGooglePlaces" async defer></script>
-    <script>
-        // Global callback for Google Places API
-        window.initGooglePlaces = function() {
-            console.log('✅ Google Places API loaded successfully');
-            window.googlePlacesReady = true;
-        };
-    </script>
     <style>
         /* ============================================================================
            CSS VARIABLES FOR THEMES SYSTEM
@@ -3278,53 +3270,33 @@
             document.getElementById('dateFrom').addEventListener('input', saveState);
             document.getElementById('dateTo').addEventListener('input', saveState);
 
-            // Initialize Google Places Autocomplete for location field
-            function setupGooglePlacesAutocomplete() {
-                if (typeof google !== 'undefined' && google.maps && google.maps.places) {
-                    const locationInput = document.getElementById('location');
-                    const autocomplete = new google.maps.places.Autocomplete(locationInput, {
-                        types: ['(cities)'],
-                        fields: ['name', 'formatted_address']
-                    });
+            // Google Places Autocomplete is deprecated for new customers
+            // For now, just track manual location input
+            const locationInput = document.getElementById('location');
+            locationInput.addEventListener('change', function() {
+                const locationValue = locationInput.value;
+                if (locationValue) {
+                    // Track location entry in Google Analytics
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'location_entered', {
+                            event_category: 'Travel Bingo',
+                            event_label: locationValue,
+                            location_name: locationValue
+                        });
+                    }
 
-                    autocomplete.addListener('place_changed', function() {
-                        const place = autocomplete.getPlace();
-                        if (place.name) {
-                            locationInput.value = place.name;
-                            saveState();
+                    // Track location entry in Meta Pixel
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'Search', {
+                            search_string: locationValue,
+                            content_category: 'Travel Destination',
+                            content_name: locationValue
+                        });
+                    }
 
-                            // Track location selection in Google Analytics
-                            if (typeof gtag !== 'undefined') {
-                                gtag('event', 'location_selected', {
-                                    event_category: 'Travel Bingo',
-                                    event_label: place.name,
-                                    location_name: place.name,
-                                    location_full: place.formatted_address || place.name
-                                });
-                            }
-
-                            // Track location selection in Meta Pixel
-                            if (typeof fbq !== 'undefined') {
-                                fbq('track', 'Search', {
-                                    search_string: place.name,
-                                    content_category: 'Travel Destination',
-                                    content_name: place.name
-                                });
-                            }
-
-                            console.log('📍 Location tracked:', place.name);
-                        }
-                    });
-
-                    console.log('✅ Google Places Autocomplete initialized');
-                } else {
-                    console.warn('⚠️ Google Places API not ready, retrying...');
-                    setTimeout(setupGooglePlacesAutocomplete, 500);
+                    console.log('📍 Location entered:', locationValue);
                 }
-            }
-
-            // Start trying to initialize autocomplete
-            setupGooglePlacesAutocomplete();
+            });
 
             document.getElementById('resetBtn').addEventListener('click', () => {
                 if (confirm(getMsg('confirmReset'))) {
