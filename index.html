@@ -6795,6 +6795,28 @@ async function initAutocomplete() {
   console.log('📍 Initializing Google Places Autocomplete...');
 
   try {
+    // Wait for Google Maps API to load
+    if (typeof google === 'undefined' || !google.maps) {
+      console.warn('⏳ Google Maps API not loaded yet, waiting...');
+      await new Promise((resolve) => {
+        const checkGoogle = setInterval(() => {
+          if (typeof google !== 'undefined' && google.maps) {
+            clearInterval(checkGoogle);
+            resolve();
+          }
+        }, 100);
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          clearInterval(checkGoogle);
+          resolve();
+        }, 10000);
+      });
+    }
+
+    if (typeof google === 'undefined' || !google.maps) {
+      throw new Error('Google Maps API failed to load');
+    }
+
     // Load the Places library
     const { AutocompleteService, AutocompleteSessionToken } =
       await google.maps.importLibrary("places");
@@ -6909,6 +6931,26 @@ function handleLocationSelect(locationName) {
       content_name: locationName
     });
   }
+}
+
+// Fallback: Try to initialize on DOMContentLoaded if callback hasn't fired
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      if (!autocompleteService) {
+        console.log('🔄 Callback did not fire, trying manual init...');
+        initAutocomplete();
+      }
+    }, 2000);
+  });
+} else {
+  // Document already loaded
+  setTimeout(() => {
+    if (!autocompleteService) {
+      console.log('🔄 Trying manual init...');
+      initAutocomplete();
+    }
+  }, 2000);
 }
 
 </script>
