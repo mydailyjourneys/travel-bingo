@@ -68,7 +68,7 @@
     <meta property="og:url" content="https://bingo.mydailyjourneys.com">
     <meta property="og:title" content="Travel Bingo - Discover The World Differently">
     <meta property="og:description" content="Play Travel Bingo and explore the world through challenges and adventures!">
-    <meta property="og:image" content="https://bingo.mydailyjourneys.com/icon-512x512.png">
+    <meta property="og:image" content="https://bingo.mydailyjourneys.com/icons/icon-square-512.png">
     <meta property="og:image:width" content="512">
     <meta property="og:image:height" content="512">
     <meta property="og:image:alt" content="Travel Bingo Logo">
@@ -78,12 +78,19 @@
     <meta name="twitter:url" content="https://bingo.mydailyjourneys.com">
     <meta name="twitter:title" content="Travel Bingo - Discover The World Differently">
     <meta name="twitter:description" content="Play Travel Bingo and explore the world through challenges and adventures!">
-    <meta name="twitter:image" content="https://bingo.mydailyjourneys.com/icon-512x512.png">
+    <meta name="twitter:image" content="https://bingo.mydailyjourneys.com/icons/icon-square-512.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-JPCy0Kx1OPRWLsPeYZy19AdEtXX2yOE&libraries=places&language=he"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-JPCy0Kx1OPRWLsPeYZy19AdEtXX2yOE&libraries=places&language=he&callback=initGooglePlaces" async defer></script>
+    <script>
+        // Global callback for Google Places API
+        window.initGooglePlaces = function() {
+            console.log('✅ Google Places API loaded successfully');
+            window.googlePlacesReady = true;
+        };
+    </script>
     <style>
         /* ============================================================================
            CSS VARIABLES FOR THEMES SYSTEM
@@ -3272,42 +3279,52 @@
             document.getElementById('dateTo').addEventListener('input', saveState);
 
             // Initialize Google Places Autocomplete for location field
-            if (typeof google !== 'undefined' && google.maps && google.maps.places) {
-                const locationInput = document.getElementById('location');
-                const autocomplete = new google.maps.places.Autocomplete(locationInput, {
-                    types: ['(cities)'],
-                    fields: ['name', 'formatted_address']
-                });
+            function setupGooglePlacesAutocomplete() {
+                if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+                    const locationInput = document.getElementById('location');
+                    const autocomplete = new google.maps.places.Autocomplete(locationInput, {
+                        types: ['(cities)'],
+                        fields: ['name', 'formatted_address']
+                    });
 
-                autocomplete.addListener('place_changed', function() {
-                    const place = autocomplete.getPlace();
-                    if (place.name) {
-                        locationInput.value = place.name;
-                        saveState();
+                    autocomplete.addListener('place_changed', function() {
+                        const place = autocomplete.getPlace();
+                        if (place.name) {
+                            locationInput.value = place.name;
+                            saveState();
 
-                        // Track location selection in Google Analytics
-                        if (typeof gtag !== 'undefined') {
-                            gtag('event', 'location_selected', {
-                                event_category: 'Travel Bingo',
-                                event_label: place.name,
-                                location_name: place.name,
-                                location_full: place.formatted_address || place.name
-                            });
+                            // Track location selection in Google Analytics
+                            if (typeof gtag !== 'undefined') {
+                                gtag('event', 'location_selected', {
+                                    event_category: 'Travel Bingo',
+                                    event_label: place.name,
+                                    location_name: place.name,
+                                    location_full: place.formatted_address || place.name
+                                });
+                            }
+
+                            // Track location selection in Meta Pixel
+                            if (typeof fbq !== 'undefined') {
+                                fbq('track', 'Search', {
+                                    search_string: place.name,
+                                    content_category: 'Travel Destination',
+                                    content_name: place.name
+                                });
+                            }
+
+                            console.log('📍 Location tracked:', place.name);
                         }
+                    });
 
-                        // Track location selection in Meta Pixel
-                        if (typeof fbq !== 'undefined') {
-                            fbq('track', 'Search', {
-                                search_string: place.name,
-                                content_category: 'Travel Destination',
-                                content_name: place.name
-                            });
-                        }
-
-                        console.log('📍 Location tracked:', place.name);
-                    }
-                });
+                    console.log('✅ Google Places Autocomplete initialized');
+                } else {
+                    console.warn('⚠️ Google Places API not ready, retrying...');
+                    setTimeout(setupGooglePlacesAutocomplete, 500);
+                }
             }
+
+            // Start trying to initialize autocomplete
+            setupGooglePlacesAutocomplete();
 
             document.getElementById('resetBtn').addEventListener('click', () => {
                 if (confirm(getMsg('confirmReset'))) {
